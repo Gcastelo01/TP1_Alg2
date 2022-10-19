@@ -396,6 +396,58 @@ def preProcessConvexHull(EnvoltoriaA, EnvoltoriaB):
 
     return (endpoitsList, segmentsList)
 
+# ************************** Model Section ***********************************
+
+def squareDotsDistance(dotA:Dot, dotB:Dot):
+    return (dotB.x - dotA.x)**2 + (dotB.y - dotA.y)**2
+
+def closesPoint(EnvoltoriaA, EnvoltoriaB):
+    lenMin = squareDotsDistance(EnvoltoriaA[0], EnvoltoriaB[0])
+    aMin = EnvoltoriaA[0]
+    bMin = EnvoltoriaB[0]
+    for a in EnvoltoriaA:
+        for b in EnvoltoriaB:
+            if squareDotsDistance(a, b) < lenMin:
+                lenMin = squareDotsDistance(a, b)
+                aMin = a
+                bMin = b
+    
+    return aMin, bMin
+
+def orthogonalLine(aDot, bDot):
+    left = aDot if aDot.x < bDot.x else bDot
+    right = aDot if aDot.x >= bDot.x else bDot
+    
+    xMedio = (left.x + right.x)/2
+    yMedio = (left.y + right.y)/2
+
+    m = ((bDot.y - aDot.y) / (bDot.x - aDot.x))
+
+    angCoef = (-1) / m
+
+
+    bMediatriz = yMedio - angCoef*xMedio
+
+    mediatrizA = Dot(xMedio + 10, angCoef*(xMedio + 10) + bMediatriz)
+    mediatrizB = Dot(xMedio - 10, angCoef*(xMedio - 10) + bMediatriz)
+    
+
+    return [(mediatrizB, mediatrizA), (aDot, bDot)]
+
+def ourModel(EnvoltoriaA, EnvoltoriaB):
+    a, b = closesPoint(EnvoltoriaA, EnvoltoriaB)
+    orthogonal, line = orthogonalLine(a, b)
+    
+    # Verifica se a reta é realmente orthogonal
+    a, b = line
+    c, d = orthogonal    
+    produtoEscalar = (b.x - a.x) * (d.x - c.x) + (b.y - a.y) * (d.y - c.y) 
+
+    assert produtoEscalar <= 10**-6, "Erro a reta encontrada não é orthogonal"
+
+    return orthogonal, line
+
+# **************************** Test Section ************************
 
 def testTo(n: int):
     nPoints = 6
