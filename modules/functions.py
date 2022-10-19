@@ -1,6 +1,7 @@
 from random import randint, seed, random
 import matplotlib.pyplot as plt
 import bintrees
+from numpy import void
 from .classes import Dot, Endpoint
 
 
@@ -186,7 +187,11 @@ def segments_intersect(s1: Segment, s2: Segment) -> bool:
     return __aux_segments_intersect__(s1.left, s1.right, s2.left, s2.right)
 
 
-def isAbove(avl, key):
+def isAbove(avl: bintrees.AVLTree, key) -> bool:
+    """
+    Verifica se um segmento possui algum acima dele
+
+    """
     if avl.__contains__(key):
         try:
             segment = avl.succ_item(key)[1]
@@ -201,7 +206,10 @@ def isAbove(avl, key):
             return False, 'error'
 
 
-def isBelow(avl, key):
+def isBelow(avl, key) -> bool:
+    """
+    Verifica se algum segmento possui segmentos abaixo dele
+    """
     if avl.__contains__(key):
         try:
             segment = avl.prev_item(key)[1]
@@ -216,17 +224,18 @@ def isBelow(avl, key):
             return False, 'error'
 
 
-def sweepLineIntersection(endpoitsList, segmentsList):
+def sweepLineIntersection(endpoitsList, segmentsList) -> bool:
+    """
+    Algoritmo auxiliar à varredura linear. Verifica se existe interesecção na lista de segmentos varridos no momento.
+
+    @param endpoitsList: Lista de pontos finais
+    @param segmentList: Lista com segmentos sendo varridos no momento
+    """
     avl = [bintrees.AVLTree(), bintrees.AVLTree()]
 
     for p in endpoitsList:
 
         s = segmentsList[p.segmentIndx]
-
-        # print(20 * '-')
-        # print(avl[0])
-        # print(avl[1])
-        # print(s, '\t', p.segmentIndx)
 
         # Insere o segmento na arvore
         if p.endpointType == 'left':
@@ -243,7 +252,6 @@ def sweepLineIntersection(endpoitsList, segmentsList):
             if (aboveExist):
                 for other in otherSegments:
                     hasIntersection = segments_intersect(s, other)
-                    # print("above has Intersect: ", hasIntersection)
                     if (hasIntersection):
                         return True
 
@@ -251,12 +259,8 @@ def sweepLineIntersection(endpoitsList, segmentsList):
             if (belowExist):
                 for other in otherSegments:
                     hasIntersection = segments_intersect(s, other)
-                    # print("below has Intersect: ", hasIntersection)
                     if (hasIntersection):
                         return True
-
-            # print("isAbove: ", aboveExist, "\t isBelow: ", belowExist)
-            # print()
 
         else:
             aboveExistOther, aboveSegmentsOther = isAbove(
@@ -266,11 +270,6 @@ def sweepLineIntersection(endpoitsList, segmentsList):
 
             aboveExist, aboveSegments = isAbove(avl[s.label], s.right.y)
             belowExist, belowSegments = isBelow(avl[s.label], s.right.y)
-
-            # print("aboveExist: ", aboveExist)
-            # print("belowExist: ", aboveExist)
-            # print("aboveExistOther: ", aboveExistOther)
-            # print("belowExistOther: ", belowExistOther)
 
             if (aboveExist and belowExistOther):
                 for aboveSegment in aboveSegments:
@@ -302,7 +301,12 @@ def sweepLineIntersection(endpoitsList, segmentsList):
     return False
 
 
-def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100, y_inicial=0, y_final=100):
+def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100,     y_inicial=0, y_final=100) -> tuple(list, list):
+    """
+    Gera uma lista de pontos aleatória, e, em seguida, aplica o algoritmo de Graham nela.
+
+    @return uma tupla contendo a lista de pontos e a lista com os pontos pertencentes à envoltória
+    """
     dot_list = []
 
     seed(seedParam)
@@ -317,8 +321,10 @@ def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100, y_in
     return (dot_list, Graham(sorted_list))
 
 
-def plotEnvoltoria(ax, pontos, envoltoria, dotType='r*', envType='b-'):
-
+def plotEnvoltoria(ax, pontos, envoltoria, dotType='r*', envType='b-') -> None:
+    """
+    Plota a envoltória convexa no gráfico
+    """
     for i in range(len(pontos)):
         ax.plot(pontos[i].x, pontos[i].y, dotType)
 
@@ -333,8 +339,11 @@ def plotEnvoltoria(ax, pontos, envoltoria, dotType='r*', envType='b-'):
             [lista_Envoltoria[1][len(lista_Envoltoria[1]) - 1], lista_Envoltoria[1][0]], envType)
 
 
-def preProcessConvexHull(EnvoltoriaA, EnvoltoriaB):
+def preProcessConvexHull(EnvoltoriaA, EnvoltoriaB) -> tuple:
+    """
+    Faz o pré processamento das envoltórias convexas.
 
+    """
     endpoitsList: Endpoint = []
     segmentsList: Segment = []
 
@@ -398,10 +407,19 @@ def preProcessConvexHull(EnvoltoriaA, EnvoltoriaB):
 
 # ************************** Model Section ***********************************
 
-def squareDotsDistance(dotA:Dot, dotB:Dot):
+
+def squareDotsDistance(dotA: Dot, dotB: Dot) -> float:
+    """
+    Define a distância quadrada entre dois pontos
+
+    """
     return (dotB.x - dotA.x)**2 + (dotB.y - dotA.y)**2
 
-def closesPoint(EnvoltoriaA, EnvoltoriaB):
+
+def closesPoint(EnvoltoriaA, EnvoltoriaB) -> tuple(Dot, Dot):
+    """
+    Dadas duas envoltórias, este método retorna o par de pontos mais próximos, sendo um pertencente à A e outro pertencente à B.
+    """
     lenMin = squareDotsDistance(EnvoltoriaA[0], EnvoltoriaB[0])
     aMin = EnvoltoriaA[0]
     bMin = EnvoltoriaB[0]
@@ -411,13 +429,23 @@ def closesPoint(EnvoltoriaA, EnvoltoriaB):
                 lenMin = squareDotsDistance(a, b)
                 aMin = a
                 bMin = b
-    
+
     return aMin, bMin
 
-def orthogonalLine(aDot, bDot):
+
+def orthogonalLine(aDot, bDot) -> list(tuple(Dot, Dot), tuple(Dot, Dot)):
+    """
+    Dados dois pontos A e B,  determina uma linha ortogonal que divide o segmento que conecta ambos ao meio (a mediatriz).
+
+    @param aDot: Ponto A
+    @param bDot: Ponto B
+
+    @return Uma lista contendo : Os pontos que determinam a mediatriz, os pontos A e B
+    """
+
     left = aDot if aDot.x < bDot.x else bDot
     right = aDot if aDot.x >= bDot.x else bDot
-    
+
     xMedio = (left.x + right.x)/2
     yMedio = (left.y + right.y)/2
 
@@ -425,31 +453,41 @@ def orthogonalLine(aDot, bDot):
 
     angCoef = (-1) / m
 
-
     bMediatriz = yMedio - angCoef*xMedio
 
     mediatrizA = Dot(xMedio + 10, angCoef*(xMedio + 10) + bMediatriz)
     mediatrizB = Dot(xMedio - 10, angCoef*(xMedio - 10) + bMediatriz)
-    
 
     return [(mediatrizB, mediatrizA), (aDot, bDot)]
 
-def ourModel(EnvoltoriaA, EnvoltoriaB):
+
+def ourModel(EnvoltoriaA, EnvoltoriaB) -> tuple(tuple, tuple):
+    """
+    Dadas as duas envoltórias, encontra o par de pontos mais próximos e liga as duas. Em seguida, traça a ortogonal à reta de ligação. 
+    """
     a, b = closesPoint(EnvoltoriaA, EnvoltoriaB)
     orthogonal, line = orthogonalLine(a, b)
-    
+
     # Verifica se a reta é realmente orthogonal
     a, b = line
-    c, d = orthogonal    
-    produtoEscalar = (b.x - a.x) * (d.x - c.x) + (b.y - a.y) * (d.y - c.y) 
+    c, d = orthogonal
+    produtoEscalar = (b.x - a.x) * (d.x - c.x) + (b.y - a.y) * (d.y - c.y)
 
-    assert produtoEscalar <= 10**-6, "Erro a reta encontrada não é orthogonal"
+    assert produtoEscalar <= 10**-6, "Erro a reta encontrada não é ortogonal"
 
     return orthogonal, line
 
 # **************************** Test Section ************************
 
-def testTo(n: int):
+
+def testTo(n: int) -> None:
+    """
+    Função que testa todo o processo de funcionamento do modelo: Desde a criação de dois conjuntos de pontos aleatórios, passando pela criação das envoltórias até chegar na separação dos conjuntos.
+
+    @param n Número de testes pseudoaleatórios a serem gerados
+    
+    A função não retorna nada. Ela plota os gráficos, mostrando as envoltórias.
+    """
     nPoints = 6
     fig, ax = plt.subplots(n)
     fig.set_figheight(2*n)
