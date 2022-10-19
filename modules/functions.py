@@ -5,26 +5,40 @@ from .classes import Dot, Endpoint
 
 
 class Segment:
+    """
+    Define um segmento de reta. Um segmento é um pedaço de uma reta que conecta 2 pontos
+    @parâmetro left - Ponto inicial do segmento
+    @parâmetro right - Ponto final do segmento
+    @parâmetro label - Nome do segmento
+    """
+
     def __init__(self, left: Dot, right: Dot, label):
         self.left = left
         self.right = right
         self.label = label
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'( {self.left} -> {self.right}, {self.label} )'
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if (self.left == other.left and self.right == other.right and self.label == other.label):
             return True
         return False
 
 
 def sortDotsByPolarAngle(dotsParam) -> list:
+    """
+    sortDotsByPolarAngle recebe uma lista de pontos não ordenada e retorna a lista com os mesmos pontos, ordenados de acordo com ângulo polar em relação ao ponto de menor y (tratado como âncora). Custo assintótico O(n log n)
+
+    @param dotsParam: Lista de pontos não ordenados.
+    @return Lista de pontos ordenados
+    """
     dots = dotsParam.copy()
     anchor = dots[0]
     indx = 0
     anchor_indx = indx
-    # find anchor
+
+    # Encontra âncora em custo O(n)
     for p in dots:
         if p.y < anchor.y:
             anchor = p
@@ -34,12 +48,13 @@ def sortDotsByPolarAngle(dotsParam) -> list:
             anchor_indx = indx
         indx += 1
 
-    # normalize dots
+    # Normaliza os pontos. Custo O(n)
     norm_dots = []
     dots.pop(anchor_indx)
     for dot in dots:
         norm_dots.append(dot - anchor)
 
+    # Ordena os pontos em O(n log n)
     norm_dots.sort()
 
     sorted_dots = [anchor]
@@ -50,10 +65,25 @@ def sortDotsByPolarAngle(dotsParam) -> list:
 
 
 def noise(x) -> float:
+    """
+    Soma a um número um determinado valor pseudoaleatório no intervalo [0, 1).
+    Custo assintótico O(1)
+
+    @param Número no qual acrescentar ruído
+    @return Número com ruído 
+    """
     return x + random()
 
 
 def isLeftTurn(a, b, c) -> bool:
+    """
+    Dados 3 pontos: a, b e c, a função verifica se há uma volta para a esquerda no caminho a -> b -> c. Custo assinstótico O(1).
+
+    @param a: Ponto 
+    @param a: Ponto 
+    @param a: Ponto 
+    @return bool True ou False
+    """
     B = b - a
     C = c - a
 
@@ -63,6 +93,13 @@ def isLeftTurn(a, b, c) -> bool:
 
 
 def Graham(DotListParam) -> list:
+    """
+    Execução padrão da Varredura de Graham para definir a envoltória convexa do conjunto. Custo assintótico O(n log n).
+
+    @param DotListParam: Lista de pontos ordenados pela coordenada polar em relação ao âncora
+
+    @return list: Lista com os pontos pertencentes à envoltória convexa  
+    """
     DotList = DotListParam
     stack = []
     stack.append(DotList[0])
@@ -79,9 +116,16 @@ def Graham(DotListParam) -> list:
     return stack
 
 
-# Verifica se o ponto p3 está na semireta p1p2.
-# p1, p2 e p3 são colineares
-def on_segment(p1: Dot, p2: Dot, p3: Dot):
+def on_segment(p1: Dot, p2: Dot, p3: Dot) -> bool:
+    """
+    Verifica se o ponto p3 está na semireta p1 -> p2, ou seja, p1 -> p2 -> p3 são colineares
+
+    @param p1: Ponto
+    @param p2: Ponto
+    @param p3: Ponto
+    @return: bool
+    """
+
     p1HasLessX = p1.x < p2.x
     if p1HasLessX and p1.x <= p3.x and p2.x >= p3.x:
         return True
@@ -90,10 +134,12 @@ def on_segment(p1: Dot, p2: Dot, p3: Dot):
     return False
 
 
-def direction(a, b, c):
-    # return 1 if turn left
-    # return -1 if turn right
-    # return 0 if is co-linear
+def direction(a, b, c) -> int:
+    """ 
+    Verifica a direção seguida na mudança de rotas a -> b -> c.
+
+    @return 1 se vira a esquerda, 0 se colinear e -1 se vira à direita
+    """
 
     B = b - a
     C = c - a
@@ -103,7 +149,12 @@ def direction(a, b, c):
     return (term1 - term2)
 
 
-def aux_segments_intersect(p1, p2, p3, p4):
+def __aux_segments_intersect__(p1, p2, p3, p4) -> bool:
+    """
+    Método auxiliar para verificar se há intersecção entre dois segmentos.
+    Não deve ser chamado no corpo principal das funções.
+    """
+
     d1 = direction(p3, p4, p1)
     d2 = direction(p3, p4, p2)
     d3 = direction(p1, p2, p3)
@@ -123,8 +174,16 @@ def aux_segments_intersect(p1, p2, p3, p4):
     return False
 
 
-def segments_intersect(s1: Segment, s2: Segment):
-    return aux_segments_intersect(s1.left, s1.right, s2.left, s2.right)
+def segments_intersect(s1: Segment, s2: Segment) -> bool:
+    """
+    Dados dois segmentos, verifica se há intersecção entre eles.
+
+    @param s1: Segmento
+    @param s2: Segmento
+
+    @return bool
+    """
+    return __aux_segments_intersect__(s1.left, s1.right, s2.left, s2.right)
 
 
 def isAbove(avl, key):
