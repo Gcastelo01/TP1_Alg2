@@ -301,7 +301,7 @@ def sweepLineIntersection(endpoitsList, segmentsList) -> bool:
     return False
 
 
-def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100,     y_inicial=0, y_final=100) -> tuple(list, list):
+def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100, y_inicial=0, y_final=100) -> tuple([list, list]):
     """
     Gera uma lista de pontos aleatória, e, em seguida, aplica o algoritmo de Graham nela.
 
@@ -416,7 +416,7 @@ def squareDotsDistance(dotA: Dot, dotB: Dot) -> float:
     return (dotB.x - dotA.x)**2 + (dotB.y - dotA.y)**2
 
 
-def closesPoint(EnvoltoriaA, EnvoltoriaB) -> tuple(Dot, Dot):
+def closesPoint(EnvoltoriaA, EnvoltoriaB) -> tuple([Dot, Dot]):
     """
     Dadas duas envoltórias, este método retorna o par de pontos mais próximos, sendo um pertencente à A e outro pertencente à B.
     """
@@ -433,7 +433,7 @@ def closesPoint(EnvoltoriaA, EnvoltoriaB) -> tuple(Dot, Dot):
     return aMin, bMin
 
 
-def orthogonalLine(aDot, bDot) -> list(tuple(Dot, Dot), tuple(Dot, Dot)):
+def orthogonalLine(aDot, bDot) -> tuple([Dot, Dot]):
     """
     Dados dois pontos A e B,  determina uma linha ortogonal que divide o segmento que conecta ambos ao meio (a mediatriz).
 
@@ -458,24 +458,28 @@ def orthogonalLine(aDot, bDot) -> list(tuple(Dot, Dot), tuple(Dot, Dot)):
     mediatrizA = Dot(xMedio + 10, angCoef*(xMedio + 10) + bMediatriz)
     mediatrizB = Dot(xMedio - 10, angCoef*(xMedio - 10) + bMediatriz)
 
-    return [(mediatrizB, mediatrizA), (aDot, bDot)]
+    return (mediatrizB, mediatrizA)
 
 
-def ourModel(EnvoltoriaA, EnvoltoriaB) -> tuple(tuple, tuple):
+def ourModel(EnvoltoriaA, EnvoltoriaB) -> tuple([tuple, tuple]):
     """
     Dadas as duas envoltórias, encontra o par de pontos mais próximos e liga as duas. Em seguida, traça a ortogonal à reta de ligação. 
     """
-    a, b = closesPoint(EnvoltoriaA, EnvoltoriaB)
-    orthogonal, line = orthogonalLine(a, b)
+    line = closesPoint(EnvoltoriaA, EnvoltoriaB)
+    a, b = line
+
+    orthogonal = orthogonalLine(a, b)
 
     # Verifica se a reta é realmente orthogonal
-    a, b = line
     c, d = orthogonal
     produtoEscalar = (b.x - a.x) * (d.x - c.x) + (b.y - a.y) * (d.y - c.y)
 
     assert produtoEscalar <= 10**-6, "Erro a reta encontrada não é ortogonal"
 
-    return orthogonal, line
+    # Verfica se a envoltoria A está a esquerda da Reta
+    left =  True if direction(c, d, a) > 0 else False
+
+    return orthogonal, line, left
 
 # **************************** Test Section ************************
 
