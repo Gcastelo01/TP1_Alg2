@@ -12,3 +12,5 @@ Aqui estão listadas as bibliotecas que estão sendo utilizadas para o projeto n
 * Numpy
 * Pandas
 * Matplotlib
+* Sklear
+* Bintrees
