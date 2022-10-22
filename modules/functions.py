@@ -1,7 +1,6 @@
 from random import randint, seed, random
 import matplotlib.pyplot as plt
 import bintrees
-from numpy import void
 from .classes import Dot, Endpoint
 
 
