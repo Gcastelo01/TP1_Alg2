@@ -432,7 +432,7 @@ def closesPoint(EnvoltoriaA, EnvoltoriaB) -> tuple([Dot, Dot]):
     return aMin, bMin
 
 
-def orthogonalLine(aDot, bDot) -> tuple([Dot, Dot]):
+def orthogonalLine(aDot, bDot, extremeX, extremeY) -> tuple([Dot, Dot]):
     """
     Dados dois pontos A e B,  determina uma linha ortogonal que divide o segmento que conecta ambos ao meio (a mediatriz).
 
@@ -458,20 +458,22 @@ def orthogonalLine(aDot, bDot) -> tuple([Dot, Dot]):
 
     bMediatriz = yMedio - angCoef*xMedio
 
-    mediatrizA = Dot(xMedio + 10, angCoef*(xMedio + 10) + bMediatriz)
-    mediatrizB = Dot(xMedio - 10, angCoef*(xMedio - 10) + bMediatriz)
+    mediatrizA = Dot(extremeX[0], angCoef*(extremeX[0]) + bMediatriz)
+    mediatrizB = Dot(extremeX[1], angCoef*(extremeX[1]) + bMediatriz)
+
+    
 
     return (mediatrizB, mediatrizA)
 
 
-def ourModel(EnvoltoriaA, EnvoltoriaB) -> tuple([tuple, tuple]):
+def ourModel(EnvoltoriaA, EnvoltoriaB, extremeX, extremeY) -> tuple([tuple, tuple]):
     """
     Dadas as duas envoltórias, encontra o par de pontos mais próximos e liga as duas. Em seguida, traça a ortogonal à reta de ligação. 
     """
     line = closesPoint(EnvoltoriaA, EnvoltoriaB)
     a, b = line
 
-    orthogonal = orthogonalLine(a, b)
+    orthogonal = orthogonalLine(a, b, extremeX, extremeY)
 
     # Verifica se a reta é realmente orthogonal
     c, d = orthogonal

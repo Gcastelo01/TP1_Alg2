@@ -1,3 +1,4 @@
+from audioop import minmax
 from .classes import *
 from .functions import *
 
@@ -78,12 +79,29 @@ def plotModel(X, ax, filter, rotulo, dotType='r*', envType='b-', compareCol1=1, 
         return "Os segmentos não são separaveis"
 
     # Plota o Modelo Linear
+    extremeX = [dotList[0].x, dotList[0].y]
+    extremeY = [dotList[0].y, dotList[0].y]
+
+    for dot in dotList:
+        if dot.x < extremeX[0] or dot.x > extremeX[1]:
+            if dot.x < extremeX[0]:
+                extremeX[0] = dot.x
+            else:
+                extremeX[1] = dot.x
+            
+        if dot.y < extremeY[0] or dot.y > extremeY[1]:
+            if dot.y < extremeY[0]:
+                extremeY[0] = dot.y
+            else:
+                extremeY[1] = dot.y
+
+
     model = 1
     firstConvexHullIsLeft = 1
 
     if (not hasIntersection):
         model, line, firstConvexHullIsLeft = ourModel(
-            envoltorias[0], envoltorias[1])
+            envoltorias[0], envoltorias[1], extremeX, extremeY)
         a, b = line
         ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
