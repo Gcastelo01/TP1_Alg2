@@ -449,9 +449,13 @@ def orthogonalLine(aDot, bDot) -> tuple([Dot, Dot]):
     xMedio = (left.x + right.x)/2
     yMedio = (left.y + right.y)/2
 
-    m = ((bDot.y - aDot.y) / (bDot.x - aDot.x))
+    deltaY = (bDot.y - aDot.y)
+    deltaX = (bDot.x - aDot.x)
 
-    angCoef = (-1) / m
+    if deltaY == 0:
+        deltaY = 0.0000001
+
+    angCoef = - (deltaX / deltaY)
 
     bMediatriz = yMedio - angCoef*xMedio
 
