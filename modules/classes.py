@@ -68,7 +68,7 @@ class Endpoint(Dot):
             if self.endpointType == b.endpointType:
                 return self.dot.y < b.dot.y
             else:
-                return True if self.endpointType == 'left' else False
+                return self.endpointType == 'left'
         else:
             return self.dot.x < b.dot.x
 

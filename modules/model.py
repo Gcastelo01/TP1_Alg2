@@ -1,8 +1,8 @@
 from audioop import minmax
 from .classes import *
 from .functions import *
-
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score, accuracy_score, recall_score, precision_score
 
 
 def plotClass(List, ax, dotType='r*', envType='b-', compareCol1=1, compareCol2=2, withNoise=True):
@@ -24,7 +24,7 @@ def plotClass(List, ax, dotType='r*', envType='b-', compareCol1=1, compareCol2=2
     plotEnvoltoria(ax, dot_list, env, dotType=dotType, envType=envType)
 
 
-def createDots(setPoints, compareCol1, compareCol2, withNoise) -> list:
+def createDots(setPoints, compareCol1=1, compareCol2=2, withNoise= True) -> list:
     dot_list = []
 
     for row in setPoints.itertuples():
@@ -36,39 +36,29 @@ def createDots(setPoints, compareCol1, compareCol2, withNoise) -> list:
     return dot_list
 
 
-def classificacao(setPoints, compareCol1, compareCol2, model, whoIsLeft, whoIsRight) -> list:
+def classificacao(setPoints, model, whoIsLeft, whoIsRight) -> list:
     y = []
 
     for row in setPoints.itertuples():
-        a = row[compareCol1]
-        b = row[compareCol2]
+        a = row[1]
+        b = row[2]
         dot = Dot(a, b)
 
         direcao = direction(model[0], model[1], dot)
 
-        if direcao > 0:
+        if direcao >= 0:
             y.append(whoIsLeft)
         elif direcao < 0:
             y.append(whoIsRight)
-        else:
-            y.append("dot is on the point")
 
     return y
 
 
-def plotModel(X, ax, filter, rotulo, dotType='r*', envType='b-', compareCol1=1, compareCol2=2, withNoise=True, plotEnv=False):
+def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'], withNoise=True, plotEnv=False):
     envoltorias = []
 
     # Processamento das dados e Calculas as envoltorias
-    dotList = []
-    setDots = [X[filter], X[~filter]]
-    for points in setDots:
-        dots = createDots(points, compareCol1, compareCol2, withNoise)
-        sorted_list = sortDotsByPolarAngle(dots)
-        envoltoria = Graham(sorted_list)
-        dotList += dots
-        envoltorias.append(envoltoria)
-        plotEnvoltoria(ax, dots, envoltoria, dotType=dotType, envType=envType)
+    dotList, envoltorias = plotEnvoltorias(X, ax, filter, rotulo, dotType=dotType, envType=envType, withNoise=withNoise)
 
     # Verifica se tem Interseção
     endPointList, segmentsList = preProcessConvexHull(
@@ -106,7 +96,7 @@ def plotModel(X, ax, filter, rotulo, dotType='r*', envType='b-', compareCol1=1, 
         ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
         c, d = model
-        ax.plot([c.x, d.x], [c.y, d.y], 'r-')
+        ax.plot([c.x, d.x], [c.y, d.y], 'v-')
 
     # Plota os pontos classificados
     # Este trecho só tem utlidade visual
@@ -129,3 +119,19 @@ def test_train(df, label, atributeA, atributeB):
     X = df.drop(label, axis=1)
 
     return train_test_split(X, y, random_state=25, train_size=0.7, shuffle=True)
+
+def plotEnvoltorias(X, ax, filter, rotulo, dotType= ['r*', 'g.'], envType= ['b-', 'y-'], withNoise=True):
+    envoltorias = []
+
+    # Processamento das dados e Calculas as envoltorias
+    dotList = []
+    setDots = [X[filter], X[~filter]]
+    for i in range(2):
+        dots = createDots(setDots[i], withNoise=withNoise)
+        sorted_list = sortDotsByPolarAngle(dots)
+        envoltoria = Graham(sorted_list)
+        dotList += dots
+        envoltorias.append(envoltoria)
+        plotEnvoltoria(ax, dots, envoltoria, dotType=dotType[i], envType=envType[i])
+    
+    return dotList, envoltorias

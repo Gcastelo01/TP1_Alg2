@@ -4,6 +4,7 @@ import bintrees
 from .classes import Dot, Endpoint
 
 
+
 class Segment:
     """
     Define um segmento de reta. Um segmento é um pedaço de uma reta que conecta 2 pontos
@@ -21,9 +22,7 @@ class Segment:
         return f'( {self.left} -> {self.right}, {self.label} )'
 
     def __eq__(self, other) -> bool:
-        if (self.left == other.left and self.right == other.right and self.label == other.label):
-            return True
-        return False
+        return (self.left == other.left and self.right == other.right and self.label == other.label)
 
 
 def sortDotsByPolarAngle(dotsParam) -> list:
@@ -72,7 +71,7 @@ def noise(x) -> float:
     @param Número no qual acrescentar ruído
     @return Número com ruído 
     """
-    return x + random()
+    return x + random() / 10**7
 
 
 def isLeftTurn(a, b, c) -> bool:
@@ -94,7 +93,7 @@ def isLeftTurn(a, b, c) -> bool:
 
 def Graham(DotListParam) -> list:
     """
-    Execução padrão da Varredura de Graham para definir a envoltória convexa do conjunto. Custo assintótico O(n log n).
+    Execução padrão da Varredura de Graham para definir a envoltória convexa do conjunto. Custo assintótico O(n).
 
     @param DotListParam: Lista de pontos ordenados pela coordenada polar em relação ao âncora
 
@@ -225,7 +224,7 @@ def isBelow(avl, key) -> bool:
 
 def sweepLineIntersection(endpoitsList, segmentsList) -> bool:
     """
-    Algoritmo auxiliar à varredura linear. Verifica se existe interesecção na lista de segmentos varridos no momento.
+    Algoritmo de varredura linear. Verifica se existe interesecção na lista de segmentos varridos no momento.
 
     @param endpoitsList: Lista de pontos finais
     @param segmentList: Lista com segmentos sendo varridos no momento
