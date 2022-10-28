@@ -60,15 +60,7 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
     # Processamento das dados e Calculas as envoltorias
     dotList, envoltorias = plotEnvoltorias(X, ax, filter, rotulo, dotType=dotType, envType=envType, withNoise=withNoise)
 
-    # Verifica se tem Interseção
-    endPointList, segmentsList = preProcessConvexHull(
-        envoltorias[0], envoltorias[1])
-    hasIntersection = sweepLineIntersection(endPointList, segmentsList)
-
-    if hasIntersection:
-        return "Os segmentos não são separaveis"
-
-    # Plota o Modelo Linear
+    # Scala da Reta encontra o menor a maior x
     extremeX = [dotList[0].x, dotList[0].y]
     extremeY = [dotList[0].y, dotList[0].y]
 
@@ -85,29 +77,13 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
             else:
                 extremeY[1] = dot.y
 
+    model, line, firstConvexHullIsLeft = ourModel(
+        envoltorias[0], envoltorias[1], extremeX, extremeY)
+    a, b = line
+    ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
-    model = 1
-    firstConvexHullIsLeft = 1
-
-    if (not hasIntersection):
-        model, line, firstConvexHullIsLeft = ourModel(
-            envoltorias[0], envoltorias[1], extremeX, extremeY)
-        a, b = line
-        ax.plot([a.x, b.x], [a.y, b.y], 'r-')
-
-        c, d = model
-        ax.plot([c.x, d.x], [c.y, d.y], 'v-')
-
-    # Plota os pontos classificados
-    # Este trecho só tem utlidade visual
-    if not plotEnv:
-        for dot in dotList:
-            if direction(model[0], model[1], dot) > 0:
-                ax.plot(dot.x, dot.y, 'b.')
-            elif direction(model[0], model[1], dot) < 0:
-                ax.plot(dot.x, dot.y, 'g.')
-            else:
-                ax.plot(dot.x, dot.y, 'y.')
+    c, d = model
+    ax.plot([c.x, d.x], [c.y, d.y], 'v-')
 
     return (model, firstConvexHullIsLeft)
 
