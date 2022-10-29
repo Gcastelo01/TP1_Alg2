@@ -44,7 +44,9 @@ def classificacao(setPoints, model, whoIsLeft, whoIsRight) -> list:
         b = row[2]
         dot = Dot(a, b)
 
-        direcao = direction(model[0], model[1], dot)
+        modelo = (model[0], model[1]) if model[0].x < model[1].x else (model[1], model[0]) 
+
+        direcao = direction(modelo[0], modelo[1], dot)
 
         if direcao >= 0:
             y.append(whoIsLeft)
