@@ -462,7 +462,7 @@ def orthogonalLine(aDot, bDot, extremeX, extremeY) -> tuple([Dot, Dot]):
 
     
 
-    return (mediatrizB, mediatrizA)
+    return (mediatrizB, mediatrizA), (angCoef, bMediatriz)
 
 
 def ourModel(EnvoltoriaA, EnvoltoriaB, extremeX, extremeY) -> tuple([tuple, tuple]):
@@ -472,7 +472,7 @@ def ourModel(EnvoltoriaA, EnvoltoriaB, extremeX, extremeY) -> tuple([tuple, tupl
     line = closesPoint(EnvoltoriaA, EnvoltoriaB)
     a, b = line
 
-    orthogonal = orthogonalLine(a, b, extremeX, extremeY)
+    orthogonal, params = orthogonalLine(a, b, extremeX, extremeY)
 
     # Verifica se a reta é realmente orthogonal
     c, d = orthogonal
@@ -483,7 +483,7 @@ def ourModel(EnvoltoriaA, EnvoltoriaB, extremeX, extremeY) -> tuple([tuple, tupl
     # Verfica se a envoltoria A está a esquerda da Reta
     left =  True if direction(c, d, a) > 0 else False
 
-    return orthogonal, line, left
+    return orthogonal, line, left, params
 
 # **************************** Test Section ************************
 

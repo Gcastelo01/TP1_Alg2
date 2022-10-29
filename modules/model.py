@@ -77,26 +77,25 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
             else:
                 extremeY[1] = dot.y
 
-    model, line, firstConvexHullIsLeft = ourModel(
+    model, line, firstConvexHullIsLeft, params = ourModel(
         envoltorias[0], envoltorias[1], extremeX, extremeY)
+    
     a, b = line
 
 
 
     ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
-    c, d = model
-    alphaLine = (d.y - c.y) / (d.x - c.x)
-    betaLine = c.y - alphaLine*c.x
     median = Dot((a.x + b.x)/2, (a.y + b.y)/2)
     lineSize = ((b.y - a.y)**2 + (b.x - a.x)**2)**0.5
 
-    cNorm = Dot(median.x - (lineSize + modelAjust), alphaLine*(median.x - (lineSize + modelAjust)) + betaLine)
-    dNorm = Dot(median.x + (lineSize + modelAjust), alphaLine*(median.x + (lineSize + modelAjust)) + betaLine)
-    ax.plot([cNorm.x, dNorm.x], [cNorm.y, dNorm.y], 'v-')
-    # ax.plot([c.x, d.x], [c.y, d.y], 'v-')
+    cNorm = Dot(median.x - (lineSize + modelAjust), params[0]*(median.x - (lineSize + modelAjust)) + params[1])
+    dNorm = Dot(median.x + (lineSize + modelAjust), params[0]*(median.x + (lineSize + modelAjust)) + params[1])
 
-    return (model, firstConvexHullIsLeft)
+    ax.plot([cNorm.x, dNorm.x], [cNorm.y, dNorm.y], 'v-', label=f'y(x) = {params[0]:.2f}x + {params[1]:.2f}')
+    ax.plot([a.x, b.x], [a.y, b.y], 'r-')
+
+    return ((cNorm, dNorm), firstConvexHullIsLeft, params)
 
 
 def test_train(df, label, atributeA, atributeB):
