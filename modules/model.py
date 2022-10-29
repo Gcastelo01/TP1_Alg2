@@ -77,13 +77,15 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
             else:
                 extremeY[1] = dot.y
 
-    model, line, firstConvexHullIsLeft = ourModel(
+    model, line, firstConvexHullIsLeft, params = ourModel(
         envoltorias[0], envoltorias[1], extremeX, extremeY)
+    
     a, b = line
+
     ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
     c, d = model
-    ax.plot([c.x, d.x], [c.y, d.y], 'v-')
+    ax.plot([c.x, d.x], [c.y, d.y], 'v-', label=f'y(x) = {params[0]:.2f}x + {params[1]:.2f}')
 
     return (model, firstConvexHullIsLeft)
 
