@@ -118,6 +118,6 @@ def plotEnvoltorias(X, ax, filter, rotulo, dotType= ['r*', 'g.'], envType= ['b-'
         envoltoria = Graham(sorted_list)
         dotList += dots
         envoltorias.append(envoltoria)
-        plotEnvoltoria(ax, dots, envoltoria, dotType=dotType[i], envType=envType[i])
+        plotEnvoltoria(ax, dots, envoltoria, rotulo=rotulo[i], dotType=dotType[i], envType=envType[i])
     
     return dotList, envoltorias

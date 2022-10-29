@@ -319,7 +319,7 @@ def EnvoltoriaAleatoria(seedParam=12, numDots=20, x_inicial=0, x_final=100, y_in
     return (dot_list, Graham(sorted_list))
 
 
-def plotEnvoltoria(ax, pontos, envoltoria, dotType='r*', envType='b-') -> None:
+def plotEnvoltoria(ax, pontos, envoltoria, rotulo, dotType='r*', envType='b-') -> None:
     """
     Plota a envoltória convexa no gráfico
     """
@@ -332,9 +332,10 @@ def plotEnvoltoria(ax, pontos, envoltoria, dotType='r*', envType='b-') -> None:
         lista_Envoltoria[0].append(e.x)
         lista_Envoltoria[1].append(e.y)
 
-    ax.plot(lista_Envoltoria[0], lista_Envoltoria[1], envType)
+    ax.plot(lista_Envoltoria[0], lista_Envoltoria[1], envType, label=rotulo)
     ax.plot([lista_Envoltoria[0][len(lista_Envoltoria[0]) - 1], lista_Envoltoria[0][0]],
             [lista_Envoltoria[1][len(lista_Envoltoria[1]) - 1], lista_Envoltoria[1][0]], envType)
+    ax.legend(loc="upper left")
 
 
 def preProcessConvexHull(EnvoltoriaA, EnvoltoriaB) -> tuple:
