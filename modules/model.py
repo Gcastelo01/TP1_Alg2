@@ -54,7 +54,7 @@ def classificacao(setPoints, model, whoIsLeft, whoIsRight) -> list:
     return y
 
 
-def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'], withNoise=True, plotEnv=False):
+def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'], withNoise=True, plotEnv=False, modelAjust=0):
     envoltorias = []
 
     # Processamento das dados e Calculas as envoltorias
@@ -80,10 +80,21 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
     model, line, firstConvexHullIsLeft = ourModel(
         envoltorias[0], envoltorias[1], extremeX, extremeY)
     a, b = line
+
+
+
     ax.plot([a.x, b.x], [a.y, b.y], 'r-')
 
     c, d = model
-    ax.plot([c.x, d.x], [c.y, d.y], 'v-')
+    alphaLine = (d.y - c.y) / (d.x - c.x)
+    betaLine = c.y - alphaLine*c.x
+    median = Dot((a.x + b.x)/2, (a.y + b.y)/2)
+    lineSize = ((b.y - a.y)**2 + (b.x - a.x)**2)**0.5
+
+    cNorm = Dot(median.x - (lineSize + modelAjust), alphaLine*(median.x - (lineSize + modelAjust)) + betaLine)
+    dNorm = Dot(median.x + (lineSize + modelAjust), alphaLine*(median.x + (lineSize + modelAjust)) + betaLine)
+    ax.plot([cNorm.x, dNorm.x], [cNorm.y, dNorm.y], 'v-')
+    # ax.plot([c.x, d.x], [c.y, d.y], 'v-')
 
     return (model, firstConvexHullIsLeft)
 
