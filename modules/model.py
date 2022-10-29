@@ -87,7 +87,7 @@ def plotModel(X, ax, filter, rotulo, dotType= ['r*', 'y.'], envType= ['b-', 'g-'
     c, d = model
     ax.plot([c.x, d.x], [c.y, d.y], 'v-', label=f'y(x) = {params[0]:.2f}x + {params[1]:.2f}')
 
-    return (model, firstConvexHullIsLeft)
+    return (model, firstConvexHullIsLeft, params)
 
 
 def test_train(df, label, atributeA, atributeB):
